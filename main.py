@@ -7,6 +7,7 @@ import requests
 from dotenv import load_dotenv, dotenv_values
 import pandas as pd 
 import os
+from time import time
 
 app = FastAPI(title="Ollama CSV Analyzer")
 ollama = OllamaClient()
@@ -62,16 +63,19 @@ async def analyze_csv(
         # Combine user prompt with data context
         full_prompt = f"{prompt}\n\n{csv_data['summary']}"
         
+        start_time = time()
         # Call Ollama
-        result = ollama.generate(model, full_prompt, timeout=300)
-        
+        result = ollama.generate(model, full_prompt)
+        end_time = time()
+        time_taken = end_time-start_time
         return {
             "analysis": result["response"],
             "file_info": {
                 "filename": file.filename,
                 "rows": csv_data["rows"],
                 "columns": csv_data["columns"],
-                "column_names": csv_data["column_names"]
+                "column_names": csv_data["column_names"],
+                "query_time": time_taken
             }
         }
         
