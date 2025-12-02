@@ -6,11 +6,11 @@ from ollama_client import OllamaClient
 import requests
 from dotenv import load_dotenv, dotenv_values
 import pandas as pd 
+import os
 
 app = FastAPI(title="Ollama CSV Analyzer")
 ollama = OllamaClient()
 load_dotenv()
-
 
 
 @app.get("/")
@@ -40,7 +40,7 @@ async def generate_text(query: Query):
 @app.post("/analyze_csv")
 async def analyze_csv(
     file: UploadFile = File(...),
-    prompt: str = "Analyze this CSV data:",
+    prompt: str = "Analyze that CSV data:",
     model: str = "gemma3:12b"
 ):
     """Upload and analyze a CSV file"""
@@ -63,7 +63,7 @@ async def analyze_csv(
         full_prompt = f"{prompt}\n\n{csv_data['summary']}"
         
         # Call Ollama
-        result = ollama.generate(model, full_prompt)
+        result = ollama.generate(model, full_prompt, timeout=300)
         
         return {
             "analysis": result["response"],
@@ -90,6 +90,23 @@ async def analyze_csv(
             status_code=500, 
             detail=f"Unexpected error: {str(e)}"
         )
+
+# Add a health check endpoint. Useful for debugging
+@app.get("/health")
+async def health_check():
+    """Check if Ollama is responding"""
+    try:
+        response = requests.get("http://localhost:11434/api/tags", timeout=5)
+        models = [m["name"] for m in response.json().get("models", [])]
+        return {
+            "ollama": "healthy",
+            "models": models,
+            "model_count": len(models)
+        }
+    except:
+        return {"ollama": "unhealthy"}, 503
+
+
 
 if __name__ == "__main__":
     import uvicorn
