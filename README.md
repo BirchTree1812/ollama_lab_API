@@ -1,5 +1,5 @@
 # Explanation
-The purpose of this task is to design a quick FastAPI application that pulls up a LLM on the user's computer to answer different queries.
+The purpose of this task is to design a quick FastAPI application that pulls up a LLM on the user's computer to answer different queries. This can be useful for market analysis, as LLMs are well-suited to finding patterns in immense volumes of data left by economic activity and then conveying the results in human language. For now, it can only accept text queries and CSV files.
 
 # Instructions
 
