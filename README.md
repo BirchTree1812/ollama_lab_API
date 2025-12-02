@@ -31,4 +31,4 @@ API calls allow the user to execute different functions. In this case, this mean
 
 # Conclusion
 
-This app can run 
+This app's code can be edited to process other types of documents, such as PDF and Excel files.
